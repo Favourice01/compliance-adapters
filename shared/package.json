@@ -1,5 +1,5 @@
 {
-  "name": "@compliance-adapters/tracing-types",
+  "name": "@compliance-adapters/shared",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
@@ -12,9 +12,8 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "typescript": "^5.5.4",
-    "@types/node": "^20.14.0"
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.4"
   },
   "license": "MIT"
 }

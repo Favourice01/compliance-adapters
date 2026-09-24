@@ -8,6 +8,7 @@
   },
   "workspaces": [
     "logger",
+    "shared",
     "tracing-types",
     "sep10-auth",
     "sanctions-oracle",
