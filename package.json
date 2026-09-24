@@ -7,7 +7,9 @@
     "compliance-adapters": "bin/compliance-adapters.js"
   },
   "workspaces": [
+    "backoff",
     "logger",
+    "shared",
     "tracing-types",
     "backoff",
     "metrics",
@@ -23,6 +25,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present -- --testPathIgnorePatterns=e2e-tests",
     "test:cli": "jest --config jest.config.js",
     "test:coverage": "npm test -- --coverage",

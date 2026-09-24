@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
     "test": "jest"
   },
   "dependencies": {

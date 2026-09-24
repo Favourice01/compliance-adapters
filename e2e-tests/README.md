@@ -16,7 +16,7 @@ This proves the three packages actually interoperate end-to-end, beyond isolated
 
 ### Network Setup
 
-**Local Testnet**: Stellar Soroban Preview Container (`stellar/soroban-preview:latest`)
+**Local Testnet**: Stellar Quickstart Container (`stellar/quickstart:testing`)
 - Runs isolated Stellar network in Docker
 - No external dependencies on testnet.stellar.org
 - Consistent ledger state for repeatable tests
@@ -49,20 +49,20 @@ e2e-tests/
 
 ```bash
 # Start the testnet container and run tests
-npm run e2e
+npm run test:e2e
 
 # Run tests without stopping container (for iteration)
-npm run e2e:test-only
+npm run test:e2e:test-only
 
 # Stop the container when done
-npm run e2e:stop
+npm run test:e2e:stop
 ```
 
 #### In CI
 
 ```bash
 # Single command; CI will handle cleanup on job exit
-npm run e2e:ci
+npm run test:e2e:ci
 ```
 
 ## How It Works
@@ -185,7 +185,7 @@ npm test
 # Runs only: sep10-auth, sanctions-oracle, horizon-listener unit tests
 # Takes ~5s, deterministic (fake timers)
 
-npm run e2e
+npm run test:e2e
 # Runs only: end-to-end integration test
 # Takes ~30s, depends on real ledger latency
 # Should only run when explicitly requested or in a separate CI job
@@ -213,7 +213,7 @@ jobs:
       - uses: actions/setup-node@v4
       - run: npm ci
       - run: npm install --workspace=e2e-tests
-      - run: npm run e2e:ci       # Slower, ~30s, but proves interop
+      - run: npm run test:e2e:ci       # Slower, ~30s, but proves interop
 ```
 
 ## Troubleshooting
@@ -228,7 +228,7 @@ lsof -i :8000
 docker-compose -f e2e-tests/docker-compose.yml down -v
 
 # Try again
-npm run e2e
+npm run test:e2e
 ```
 
 ### RPC Health Check Fails
@@ -263,7 +263,7 @@ If tests hang indefinitely, most likely causes:
 Add verbose logging to understand where it's stuck:
 
 ```bash
-DEBUG=* npm run e2e:test-only
+DEBUG=* npm run test:e2e:test-only
 ```
 
 ## Future Enhancements
@@ -273,4 +273,4 @@ DEBUG=* npm run e2e:test-only
 - [ ] Test multiple addresses in single sync run
 - [ ] Add load test (many denylists in one transaction)
 - [ ] Test contract event filtering (listener only receives relevant events)
-- [ ] Failure scenarios (insufficient funds, invalid contract state, RPC outages)
+- [x] Failure scenarios (insufficient funds, invalid contract state, RPC outages)

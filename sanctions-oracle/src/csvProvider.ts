@@ -29,7 +29,7 @@ export interface CsvSanctionsProviderOptions {
 }
 
 export class CsvSanctionsProvider implements SanctionsProvider {
-  private flaggedAddresses: Map<string, string> = new Map();
+  private flaggedAddresses: Map<string, string[]> = new Map();
   private readonly logger: Logger;
 
   constructor(
@@ -67,7 +67,9 @@ export class CsvSanctionsProvider implements SanctionsProvider {
             continue;
           }
           const source = parts.length >= 2 ? parts[1].trim() : CSV_SOURCE;
-          this.flaggedAddresses.set(address, source);
+          const sources = this.flaggedAddresses.get(address) ?? [];
+          if (!sources.includes(source)) sources.push(source);
+          this.flaggedAddresses.set(address, sources);
         }
       }
     } catch (error) {
