@@ -9,6 +9,9 @@
   "workspaces": [
     "logger",
     "tracing-types",
+    "backoff",
+    "metrics",
+    "tracing",
     "sep10-auth",
     "sanctions-oracle",
     "horizon-listener",

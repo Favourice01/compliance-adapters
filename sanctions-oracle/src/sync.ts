@@ -37,6 +37,7 @@ interface CacheEntry {
 export class ProviderResultCache {
   private cache: Map<string, CacheEntry> = new Map();
   private readonly ttlMs: number;
+  private readonly maxEntries?: number;
   private readonly inFlight = new Map<string, Promise<{ flagged: boolean; source: string }>>();
 
   /**
