@@ -273,4 +273,4 @@ DEBUG=* npm run test:e2e:test-only
 - [ ] Test multiple addresses in single sync run
 - [ ] Add load test (many denylists in one transaction)
 - [ ] Test contract event filtering (listener only receives relevant events)
-- [ ] Failure scenarios (insufficient funds, invalid contract state, RPC outages)
+- [x] Failure scenarios (insufficient funds, invalid contract state, RPC outages)
