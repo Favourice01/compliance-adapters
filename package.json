@@ -9,8 +9,7 @@
   "workspaces": [
     "backoff",
     "logger",
-    "metrics",
-    "tracing",
+    "shared",
     "tracing-types",
     "tracing",
     "sep10-auth",
