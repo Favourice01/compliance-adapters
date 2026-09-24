@@ -1,9 +1,10 @@
+import { Keypair } from '@stellar/stellar-sdk';
 import type { NextFunction, Request, Response } from 'express';
 import { createSep10Middleware } from '../src/middleware';
 import { VerifyChallengeOptions } from '../src/verify';
 
 const options: VerifyChallengeOptions = {
-  serverAccountId: 'GSERVERACCOUNTIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  serverAccountId: Keypair.random().publicKey(),
   homeDomains: 'example.com',
   webAuthDomain: 'example.com',
 };
@@ -42,5 +43,19 @@ describe('createSep10Middleware - malformed Authorization header', () => {
       reason: 'missing bearer token',
     });
     expect(next).not.toHaveBeenCalled();
+  });
+});
+
+describe('createSep10Middleware - domain format validation', () => {
+  it.each(['https://example.com', 'example.com/'])('rejects homeDomains %p', (bad) => {
+    expect(() => createSep10Middleware({ ...options, homeDomains: bad })).toThrow(
+      /bare domain/,
+    );
+  });
+
+  it('rejects a non-bare webAuthDomain', () => {
+    expect(() =>
+      createSep10Middleware({ ...options, webAuthDomain: ['example.com', 'http://x.com'] }),
+    ).toThrow(/bare domain/);
   });
 });

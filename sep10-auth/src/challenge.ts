@@ -13,6 +13,35 @@ export class InvalidClientAddressError extends Error {
   }
 }
 
+export class InvalidMemoError extends Error {
+  constructor(memo: string) {
+    super(`Invalid memo: "${memo}" must be a numeric string representing a 64-bit unsigned integer`);
+    this.name = 'InvalidMemoError';
+  }
+}
+
+export class InvalidDomainError extends Error {
+  constructor(name: string, value: string) {
+    super(
+      `sep10-auth: ${name} must be a bare domain (no scheme, path, or whitespace), got "${value}"`,
+    );
+    this.name = 'InvalidDomainError';
+  }
+}
+
+const MAX_UINT64 = 2n ** 64n - 1n;
+
+/**
+ * Throws {@link InvalidDomainError} when `value` is not a bare domain, i.e. it
+ * contains a URL scheme (`://`), a `/`, or whitespace, as SEP-10 requires for
+ * `home_domain` and `web_auth_domain`.
+ */
+export function assertBareDomain(name: string, value: string): void {
+  if (/:\/\/|\/|\s/.test(value)) {
+    throw new InvalidDomainError(name, value);
+  }
+}
+
 export interface GenerateChallengeOptions {
   homeDomain?: string;
   webAuthDomain?: string;
@@ -73,6 +102,13 @@ export function generateChallenge(
         'in a production environment. Pass an explicit `homeDomain` option matching your deployed domain.',
     );
   }
+  assertBareDomain('homeDomain', homeDomain);
+  assertBareDomain('webAuthDomain', webAuthDomain);
+
+  if (options.memo != null && (!/^\d+$/.test(options.memo) || BigInt(options.memo) > MAX_UINT64)) {
+    throw new InvalidMemoError(options.memo);
+  }
+
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET;
   const timeoutSeconds = options.timeoutSeconds ?? DEFAULT_TIMEOUT_SECONDS;
 

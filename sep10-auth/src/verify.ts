@@ -4,6 +4,7 @@
  */
 
 import { Networks, Operation, StrKey, WebAuth } from '@stellar/stellar-sdk';
+import { assertBareDomain } from './challenge';
 
 export interface VerifyChallengeOptions {
   serverAccountId: string;
@@ -51,9 +52,19 @@ export function verifyChallenge(
   }
 
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET;
+  const homeDomainList = Array.isArray(options.homeDomains)
+    ? options.homeDomains
+    : [options.homeDomains];
   const webAuthDomains = Array.isArray(options.webAuthDomain)
     ? options.webAuthDomain
     : [options.webAuthDomain];
+
+  try {
+    homeDomainList.forEach((d) => assertBareDomain('homeDomains', d));
+    webAuthDomains.forEach((d) => assertBareDomain('webAuthDomain', d));
+  } catch (error) {
+    return { valid: false, address: '', error: (error as Error).message };
+  }
 
   // The underlying SDK only matches against a single webAuthDomain per call,
   // so try each candidate in turn and succeed on the first match.
