@@ -61,9 +61,8 @@ jobs:
         with:
           name: code-coverage-report
           path: |
-            sep10-auth/coverage/
-            sanctions-oracle/coverage/
-            horizon-listener/coverage/
+            */coverage/
+            examples/*/coverage/
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
