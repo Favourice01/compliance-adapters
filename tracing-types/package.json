@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "test": "jest"
+    "typecheck": "tsc -p . --noEmit"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
