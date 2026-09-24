@@ -4,9 +4,11 @@
  */
 
 import { RequestHandler } from 'express';
+import { StrKey } from '@stellar/stellar-sdk';
 import { type Logger, noopLogger } from '@compliance-adapters/logger';
 import { verifyChallenge, VerifyChallengeOptions } from './verify';
 import { RevocationStore } from './revocation';
+import { assertBareDomain } from './challenge';
 
 declare global {
   namespace Express {
@@ -59,6 +61,7 @@ export function createSep10Middleware(options: Sep10MiddlewareOptions): RequestH
   if (homeDomains.length === 0 || homeDomains.some((d) => !d)) {
     throw new Error('sep10-auth: homeDomains must be a non-empty array of non-empty strings');
   }
+  homeDomains.forEach((d) => assertBareDomain('homeDomains', d));
 
   const webAuthDomains = Array.isArray(options.webAuthDomain)
     ? options.webAuthDomain
@@ -66,12 +69,13 @@ export function createSep10Middleware(options: Sep10MiddlewareOptions): RequestH
   if (webAuthDomains.length === 0 || webAuthDomains.some((d) => !d)) {
     throw new Error('sep10-auth: webAuthDomain must be a non-empty array of non-empty strings');
   }
+  webAuthDomains.forEach((d) => assertBareDomain('webAuthDomain', d));
 
   return async (req, res, next) => {
     const authHeader = req.header('Authorization') ?? '';
     const [scheme, token] = authHeader.split(' ');
 
-    if (scheme !== 'Bearer' || !token) {
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
       logger.warn('sep10-auth: missing or malformed bearer token', {
         ip: req.ip,
         path: req.path,

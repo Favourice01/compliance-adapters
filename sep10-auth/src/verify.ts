@@ -4,6 +4,7 @@
  */
 
 import { Networks, Operation, StrKey, WebAuth } from '@stellar/stellar-sdk';
+import { assertBareDomain } from './challenge';
 
 export interface VerifyChallengeOptions {
   serverAccountId: string;
@@ -15,6 +16,10 @@ export interface VerifyChallengeOptions {
    * verification will fail if the transaction's memo does not match.
    * Useful for replay protection (e.g., tying a challenge to a specific
    * session or request ID).
+   *
+   * Expected encoding depends on the transaction's memo type: the plain string
+   * for `text` and `id` memos, and a hex string (case-insensitive) for `hash`
+   * and `return` memos.
    */
   expectedMemo?: string;
 }
@@ -38,6 +43,17 @@ export interface VerifyResult {
   error?: string;
 }
 
+// Buffer#toString() defaults to utf8, which mangles the raw bytes of hash/return
+// memos, so those are compared as hex instead.
+function encodeMemo(memo: { type: string; value: unknown }): string {
+  if (memo.value === null || memo.value === undefined) return '';
+  if (Buffer.isBuffer(memo.value) || memo.value instanceof Uint8Array) {
+    const buf = Buffer.from(memo.value);
+    return memo.type === 'hash' || memo.type === 'return' ? buf.toString('hex') : buf.toString('utf8');
+  }
+  return String(memo.value);
+}
+
 export function verifyChallenge(
   signedTransactionXDR: string,
   options: VerifyChallengeOptions,
@@ -51,9 +67,19 @@ export function verifyChallenge(
   }
 
   const networkPassphrase = options.networkPassphrase ?? Networks.TESTNET;
+  const homeDomainList = Array.isArray(options.homeDomains)
+    ? options.homeDomains
+    : [options.homeDomains];
   const webAuthDomains = Array.isArray(options.webAuthDomain)
     ? options.webAuthDomain
     : [options.webAuthDomain];
+
+  try {
+    homeDomainList.forEach((d) => assertBareDomain('homeDomains', d));
+    webAuthDomains.forEach((d) => assertBareDomain('webAuthDomain', d));
+  } catch (error) {
+    return { valid: false, address: '', error: (error as Error).message };
+  }
 
   // The underlying SDK only matches against a single webAuthDomain per call,
   // so try each candidate in turn and succeed on the first match.
@@ -81,8 +107,12 @@ export function verifyChallenge(
       );
 
       if (options.expectedMemo !== undefined) {
-        const txMemo = tx.memo.value?.toString() ?? '';
-        if (txMemo !== options.expectedMemo) {
+        const txMemo = encodeMemo(tx.memo);
+        const isBinaryMemo = tx.memo.type === 'hash' || tx.memo.type === 'return';
+        const matches = isBinaryMemo
+          ? txMemo === options.expectedMemo.toLowerCase()
+          : txMemo === options.expectedMemo;
+        if (!matches) {
           throw new Error(
             `sep10-auth: memo mismatch, expected "${options.expectedMemo}" but got "${txMemo}"`,
           );
