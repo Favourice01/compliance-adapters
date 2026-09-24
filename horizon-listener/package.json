@@ -18,7 +18,8 @@
   "dependencies": {
     "@stellar/stellar-sdk": "^16.0.1",
     "@compliance-adapters/logger": "*",
-    "@compliance-adapters/tracing-types": "*"
+    "@compliance-adapters/tracing-types": "*",
+    "@compliance-adapters/tracing": "*"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
