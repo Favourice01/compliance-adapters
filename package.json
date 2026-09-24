@@ -9,6 +9,7 @@
   "workspaces": [
     "logger",
     "tracing-types",
+    "tracing",
     "sep10-auth",
     "sanctions-oracle",
     "horizon-listener",
@@ -20,6 +21,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present -- --testPathIgnorePatterns=e2e-tests",
     "test:cli": "jest --config jest.config.js",
     "test:coverage": "npm test -- --coverage",
