@@ -12,7 +12,7 @@
     "metrics",
     "tracing",
     "tracing-types",
-    "shared",
+    "tracing",
     "sep10-auth",
     "sanctions-oracle",
     "horizon-listener",
