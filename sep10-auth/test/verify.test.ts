@@ -16,6 +16,25 @@ function signAsClient(
 }
 
 describe('verifyChallenge', () => {
+  it('matches expectedMemo against an id memo and rejects a mismatch', () => {
+    const serverKeypair = Keypair.random();
+    const clientKeypair = Keypair.random();
+    const challenge = generateChallenge(clientKeypair.publicKey(), serverKeypair, {
+      homeDomain,
+      webAuthDomain: homeDomain,
+      memo: '123456789',
+    });
+    const signedXDR = signAsClient(challenge.transactionXDR, Networks.TESTNET, clientKeypair);
+    const base = {
+      serverAccountId: serverKeypair.publicKey(),
+      homeDomains: homeDomain,
+      webAuthDomain: homeDomain,
+    };
+
+    expect(verifyChallenge(signedXDR, { ...base, expectedMemo: '123456789' }).valid).toBe(true);
+    expect(verifyChallenge(signedXDR, { ...base, expectedMemo: '999' }).valid).toBe(false);
+  });
+
   it('accepts a challenge signed by the client', () => {
     const serverKeypair = Keypair.random();
     const clientKeypair = Keypair.random();

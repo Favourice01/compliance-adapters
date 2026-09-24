@@ -4,9 +4,9 @@
  * Tests for the full-stack-demo server's webhook signature verification logic
  * and the /health endpoint.
  *
- * Strategy: jest.config.js maps all unbuilt workspace packages to lightweight
- * stubs in __mocks__/, so the test suite has no network dependency and can run
- * in any CI environment without a full monorepo build.
+ * Strategy: these tests exercise the real built workspace packages
+ * (sep10-auth, sanctions-oracle, horizon-listener), so they must be built
+ * (`npm run build`) before running.
  *
  * The signing helpers (isFreshTimestamp, isValidSignature) are unit-tested
  * directly, and the /webhook/events route is integration-tested via supertest.

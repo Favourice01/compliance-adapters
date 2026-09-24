@@ -85,6 +85,14 @@ describe('generateChallenge', () => {
     );
   });
 
+  it('throws ServerKeypairCannotSignError when serverKeypair has no secret key', () => {
+    const publicOnly = Keypair.fromPublicKey(Keypair.random().publicKey());
+
+    expect(() => generateChallenge(Keypair.random().publicKey(), publicOnly)).toThrow(
+      ServerKeypairCannotSignError,
+    );
+  });
+
   it('warns when using default homeDomain in production environment (issue #303)', () => {
     const serverKeypair = Keypair.random();
     const clientKeypair = Keypair.random();

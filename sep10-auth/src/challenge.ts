@@ -88,6 +88,10 @@ export function generateChallenge(
   serverKeypair: Keypair,
   options: GenerateChallengeOptions = {},
 ): GeneratedChallenge {
+  if (!serverKeypair.canSign()) {
+    throw new ServerKeypairCannotSignError();
+  }
+
   if (!StrKey.isValidEd25519PublicKey(clientAddress)) {
     throw new InvalidClientAddressError(clientAddress);
   }

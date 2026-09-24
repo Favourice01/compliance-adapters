@@ -16,11 +16,13 @@
   },
   "scripts": {
     "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
     "test": "jest"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "^16.0.1",
     "@compliance-adapters/logger": "*",
+    "@compliance-adapters/tracing": "*",
     "@compliance-adapters/tracing-types": "*"
   },
   "devDependencies": {
