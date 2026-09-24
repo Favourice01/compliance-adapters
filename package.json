@@ -7,7 +7,10 @@
     "compliance-adapters": "bin/compliance-adapters.js"
   },
   "workspaces": [
+    "backoff",
     "logger",
+    "metrics",
+    "tracing",
     "tracing-types",
     "tracing",
     "sep10-auth",
