@@ -7,9 +7,11 @@
     "compliance-adapters": "bin/compliance-adapters.js"
   },
   "workspaces": [
+    "backoff",
     "logger",
     "shared",
     "tracing-types",
+    "tracing",
     "sep10-auth",
     "sanctions-oracle",
     "horizon-listener",
