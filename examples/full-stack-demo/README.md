@@ -36,6 +36,7 @@ Use environment variables to customize runtime values:
 - `NETWORK_PASSPHRASE`
 - `HOME_DOMAIN`
 - `WEB_AUTH_DOMAIN`
+- `ADMIN_TOKEN` — shared secret required in the `X-Admin-Token` header for `POST /admin/listener/start` and `/admin/listener/stop`. When unset, all `/admin/*` routes return `503` (fail closed). Admin routes are also IP rate-limited.
 
 ## Hardening features not wired into this demo
 
