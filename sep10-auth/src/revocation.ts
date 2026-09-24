@@ -19,6 +19,8 @@ export interface RevocationStore {
   revoke(address: string, until?: Date): void | Promise<void>;
   /** Lifts a revocation previously set with {@link revoke}. */
   unrevoke(address: string): void | Promise<void>;
+  /** Optionally enumerates the addresses that are currently revoked. */
+  list?(): string[] | Promise<string[]>;
 }
 
 /**
@@ -101,6 +103,11 @@ export class InMemoryRevocationStore implements RevocationStore {
 
   unrevoke(address: string): void {
     this.revoked.delete(address);
+  }
+
+  /** Addresses currently revoked; expired timed revocations are excluded (and lazily evicted). */
+  list(): string[] {
+    return [...this.revoked.keys()].filter((address) => this.isRevoked(address));
   }
 
   /** Current number of tracked revocations (including any not yet lazily expired). */

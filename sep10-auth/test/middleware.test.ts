@@ -273,3 +273,17 @@ describe('createSep10Middleware - bearer scheme case-insensitivity (RFC 7235)', 
     );
   });
 });
+
+describe('createSep10Middleware - domain format validation', () => {
+  it.each(['https://example.com', 'example.com/'])('rejects homeDomains %p', (bad) => {
+    expect(() => createSep10Middleware({ ...options, homeDomains: bad })).toThrow(
+      /bare domain/,
+    );
+  });
+
+  it('rejects a non-bare webAuthDomain', () => {
+    expect(() =>
+      createSep10Middleware({ ...options, webAuthDomain: ['example.com', 'http://x.com'] }),
+    ).toThrow(/bare domain/);
+  });
+});
