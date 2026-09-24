@@ -1,9 +1,10 @@
+import { Keypair } from '@stellar/stellar-sdk';
 import type { NextFunction, Request, Response } from 'express';
 import { createSep10Middleware } from '../src/middleware';
 import { VerifyChallengeOptions } from '../src/verify';
 
 const options: VerifyChallengeOptions = {
-  serverAccountId: 'GSERVERACCOUNTIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  serverAccountId: Keypair.random().publicKey(),
   homeDomains: 'example.com',
   webAuthDomain: 'example.com',
 };
@@ -42,5 +43,20 @@ describe('createSep10Middleware - malformed Authorization header', () => {
       reason: 'missing bearer token',
     });
     expect(next).not.toHaveBeenCalled();
+  });
+});
+
+describe('createSep10Middleware - bearer scheme case-insensitivity (RFC 7235)', () => {
+  it.each(['bearer', 'BEARER', 'bEaReR'])('accepts the %s scheme and proceeds to verification', (scheme) => {
+    const middleware = createSep10Middleware(options);
+    const res = makeRes();
+    const next = jest.fn() as unknown as NextFunction;
+
+    middleware(makeReq(`${scheme} not-a-real-xdr`), res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).not.toHaveBeenCalledWith(
+      expect.objectContaining({ reason: 'missing bearer token' }),
+    );
   });
 });

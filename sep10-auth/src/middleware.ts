@@ -4,6 +4,7 @@
  */
 
 import { RequestHandler } from 'express';
+import { StrKey } from '@stellar/stellar-sdk';
 import { type Logger, noopLogger } from '@compliance-adapters/logger';
 import { verifyChallenge, VerifyChallengeOptions } from './verify';
 import { RevocationStore } from './revocation';
@@ -71,7 +72,7 @@ export function createSep10Middleware(options: Sep10MiddlewareOptions): RequestH
     const authHeader = req.header('Authorization') ?? '';
     const [scheme, token] = authHeader.split(' ');
 
-    if (scheme !== 'Bearer' || !token) {
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
       logger.warn('sep10-auth: missing or malformed bearer token', {
         ip: req.ip,
         path: req.path,
