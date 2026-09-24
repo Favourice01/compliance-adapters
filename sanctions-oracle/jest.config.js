@@ -26,6 +26,7 @@ module.exports = {
     '^@compliance-adapters/backoff$': '<rootDir>/../backoff/src/index.ts',
     '^@compliance-adapters/metrics$': '<rootDir>/../metrics/src/index.ts',
     '^@compliance-adapters/logger$': '<rootDir>/../logger/src/index.ts',
+    '^@compliance-adapters/tracing$': '<rootDir>/../tracing/src/index.ts',
     '^@compliance-adapters/tracing-types$': '<rootDir>/../tracing-types/src/index.ts',
   },
 };
