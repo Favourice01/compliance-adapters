@@ -72,7 +72,7 @@ export function createSep10Middleware(options: Sep10MiddlewareOptions): RequestH
     const authHeader = req.header('Authorization') ?? '';
     const [scheme, token] = authHeader.split(' ');
 
-    if (scheme !== 'Bearer' || !token) {
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
       logger.warn('sep10-auth: missing or malformed bearer token', {
         ip: req.ip,
         path: req.path,

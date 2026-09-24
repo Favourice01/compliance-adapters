@@ -13,6 +13,13 @@ export class InvalidClientAddressError extends Error {
   }
 }
 
+export class ServerKeypairCannotSignError extends Error {
+  constructor() {
+    super('serverKeypair cannot sign: it has no secret key loaded (was it built with Keypair.fromPublicKey?)');
+    this.name = 'ServerKeypairCannotSignError';
+  }
+}
+
 export interface GenerateChallengeOptions {
   homeDomain?: string;
   webAuthDomain?: string;
@@ -59,6 +66,10 @@ export function generateChallenge(
   serverKeypair: Keypair,
   options: GenerateChallengeOptions = {},
 ): GeneratedChallenge {
+  if (!serverKeypair.canSign()) {
+    throw new ServerKeypairCannotSignError();
+  }
+
   if (!StrKey.isValidEd25519PublicKey(clientAddress)) {
     throw new InvalidClientAddressError(clientAddress);
   }

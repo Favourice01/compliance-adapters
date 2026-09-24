@@ -1,3 +1,4 @@
+import { Keypair } from '@stellar/stellar-sdk';
 import type { NextFunction, Request, Response } from 'express';
 import { Keypair } from '@stellar/stellar-sdk';
 import { createSep10Middleware } from '../src/middleware';
@@ -5,11 +6,8 @@ import { Sep10MiddlewareOptions } from '../src/middleware';
 import * as verifyModule from '../src/verify';
 import { RevocationStore } from '../src/revocation';
 
-const serverKeypair = Keypair.random();
-const serverAccountId = serverKeypair.publicKey();
-
-const options: Sep10MiddlewareOptions = {
-  serverAccountId,
+const options: VerifyChallengeOptions = {
+  serverAccountId: Keypair.random().publicKey(),
   homeDomains: 'example.com',
   webAuthDomain: 'example.com',
 };
@@ -258,5 +256,20 @@ describe('createSep10Middleware', () => {
       expect(next).toHaveBeenCalledWith(storeError);
       expect(res.status).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('createSep10Middleware - bearer scheme case-insensitivity (RFC 7235)', () => {
+  it.each(['bearer', 'BEARER', 'bEaReR'])('accepts the %s scheme and proceeds to verification', (scheme) => {
+    const middleware = createSep10Middleware(options);
+    const res = makeRes();
+    const next = jest.fn() as unknown as NextFunction;
+
+    middleware(makeReq(`${scheme} not-a-real-xdr`), res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).not.toHaveBeenCalledWith(
+      expect.objectContaining({ reason: 'missing bearer token' }),
+    );
   });
 });

@@ -1,5 +1,5 @@
 import { Keypair, Networks, Transaction } from '@stellar/stellar-sdk';
-import { generateChallenge, InvalidClientAddressError } from '../src/challenge';
+import { generateChallenge, InvalidClientAddressError, ServerKeypairCannotSignError } from '../src/challenge';
 
 describe('generateChallenge', () => {
   const homeDomain = 'localhost:3000';
@@ -77,6 +77,14 @@ describe('generateChallenge', () => {
 
     expect(() => generateChallenge(invalidAddress, serverKeypair)).toThrow(
       InvalidClientAddressError,
+    );
+  });
+
+  it('throws ServerKeypairCannotSignError when serverKeypair has no secret key', () => {
+    const publicOnly = Keypair.fromPublicKey(Keypair.random().publicKey());
+
+    expect(() => generateChallenge(Keypair.random().publicKey(), publicOnly)).toThrow(
+      ServerKeypairCannotSignError,
     );
   });
 
